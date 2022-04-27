@@ -200,8 +200,8 @@ public class MyLinkedListPublicTester {
 	listLen2Iter.idx = 2;
 	listLen2Iter.forward = true;
 	listLen2Iter.canRemoveOrSet = true;
-	assertEquals("Index after 2 next", 2, listLen2Iter.nextIndex());
-    }
+
+}
 
     /**
      * Test previousIndex() on listLen2, two calls

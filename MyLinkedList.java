@@ -100,7 +100,7 @@ public class MyLinkedList<E> extends AbstractList<E> {
         */
         public MyListIterator(){
             this.left = head;
-            this.right = right.getNext();
+            this.right = head.getNext();
             this.idx = 0;
             this.forward = true;
             this.canRemoveOrSet = false;
@@ -111,21 +111,11 @@ public class MyLinkedList<E> extends AbstractList<E> {
         * and false otherwise 
         */
         public boolean hasNext(){
-            if(forward == true){
-                if(right.data != null){
-                    return true;
-                }
-                else{
-                    return false;
-                }
+            if(right.getElement() != null){
+                return true;
             }
             else{
-                if(left.data != null){
-                    return true;
-                }
-                else{
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -136,19 +126,14 @@ public class MyLinkedList<E> extends AbstractList<E> {
             if(hasNext() == false){
                 throw new NoSuchElementException("Next elemts dose not exist");
             }
-            else if(forward == true){
-                E rightData = right.data;
-                idx++;
-                right = right.getNext();
-                left = right.getPrev();
-                return rightData;
-            }
             else{
-                E leftData = left.data;
-                idx--;
-                left = left.getPrev();
-                right = left.getNext();
-                return leftData;
+                E rightData = right.getElement();
+                left = right;
+                right = right.getNext();
+                idx++;
+                forward = true;
+                canRemoveOrSet = true;
+                return rightData;
             }
         }
 
@@ -157,61 +142,41 @@ public class MyLinkedList<E> extends AbstractList<E> {
          * and false otherwise 
          */
         public boolean hasPrevious(){
-            if(forward == true){
-                if(left.data != null){
-                    return true;
-                }
-                else{
-                    return false;
-                }
+            if(left.getElement() == null){
+                return false;
             }
             else{
-                if(right.data != null){
-                    return true;
-                }
-                else{
-                    return false;
-                }
+                return true;
             }
         }
+        
 
         /**
          * @return the next element in the list when going backward
          */
-        public E previous(){
+        @Override
+        public E previous() {
             if(hasPrevious() == false){
-                throw new NoSuchElementException("Previous has no element");
+                throw new NoSuchElementException("Previous elements dose not exist");
             }
             else{
-                if(forward == true){
-                    idx--;
-                    E data = left.data;
-                    left = left.getPrev();
-                    right = left.getNext();
-                    return data;
-                }
-                else{
-                    idx++;
-                    E data = right.data;
-                    right = right.getNext();
-                    left = right.getPrev();
-                    return data;
-
-                }
+                E leftData = left.getElement();
+                right = left;
+                left = left.getPrev();
+                idx--;
+                forward = false;
+                canRemoveOrSet = true;
+                return leftData;
             }
         }
+
 
         /**
          * @return  the index of the element that would be returned by a 
          * call to next()
          */
         public int nextIndex(){
-            if(idx != 0){
-                return idx + 1;
-            }
-            else{
-                return -1;
-            }
+            return idx;
         }
 
         /**
@@ -219,7 +184,7 @@ public class MyLinkedList<E> extends AbstractList<E> {
          * element that would be returned by a call to previous().
          */
         public int previousIndex(){
-            return 0;
+            return idx - 1;
         }
 
         /**
@@ -229,15 +194,42 @@ public class MyLinkedList<E> extends AbstractList<E> {
          * immediately following add
          */
         public void add(E element){
-
+            if(element == null){
+                throw new NullPointerException("adding a null element");
+            }
+            else{
+                 Node newNode = new Node(element);
+                newNode.setNext(right);
+                newNode.setPrev(left);
+                right.setPrev(newNode);
+                left.setNext(newNode);
+                left = newNode;
+                canRemoveOrSet = false;
+                idx++;
+            }
         }
 
         /**
          * replacces the value of the more recently next()/prevoius() called node
          * with new value element
          */
-        public void set(E elements){
-
+        public void set(E element){
+           if(element == null){
+               throw new NullPointerException("set has a null element");
+           } 
+           else if(canRemoveOrSet == false){
+               throw new IllegalStateException("canRemoveorSet is false");
+           }
+           else{
+               if(forward == true){
+                   left.setElement(element);
+                   canRemoveOrSet = false;
+               }
+               else{
+                   right.setElement(element);
+                   canRemoveOrSet = false;
+               }
+           }
         }
 
         /**
@@ -245,7 +237,24 @@ public class MyLinkedList<E> extends AbstractList<E> {
          * recent next()/previous() call
          */
         public void remove(){
-            
+            if(canRemoveOrSet == false){
+                throw new IllegalStateException("canReoveOrSet is false");
+            }
+            else{
+                if(forward == true){
+                    left.getPrev().setNext(right);
+                    right.setPrev(left.getPrev());
+                    left = left.getPrev();
+                    idx--;
+                    canRemoveOrSet = false;   
+                }
+                else{
+                    right.getNext().setPrev(left);
+                    left.setNext(right.getNext());
+                    right = right.getNext();
+                    canRemoveOrSet = false;
+                }
+            }
         }
     }
 
