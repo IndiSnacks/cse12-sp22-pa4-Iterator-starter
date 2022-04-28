@@ -4,9 +4,10 @@
  * Email: sgathe@ucsd.edu
  * Sources used: Tutors, Zybooks, and Lecture Slides
  * 
- * This file creates a linked list and holds the methods to interact with said linked list
+ * This file creates a linked list and the linked list ittrator
  */
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -83,6 +84,7 @@ public class MyLinkedList<E> extends AbstractList<E> {
         public E getElement() {
             return this.data;
         }
+
     }
 
     /**
@@ -442,5 +444,15 @@ public class MyLinkedList<E> extends AbstractList<E> {
 
             return tempNode;
         }
+    }
+
+    public ListIterator<E> listIterator(){
+        MyListIterator newIterator = new MyListIterator();
+        return newIterator;
+    }
+
+    public Iterator<E> iterator(){
+        MyListIterator newIterator = new MyListIterator();
+        return newIterator;
     }
 }
